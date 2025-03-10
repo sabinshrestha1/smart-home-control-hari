@@ -1,8 +1,5 @@
 Flask
 gunicorn
-request
-jsonify
-render_template
 serial
 time
 os
