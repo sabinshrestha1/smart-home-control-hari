@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hari</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            position: relative;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .clock {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .device {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+            display: flex;
+            align-items: center;
+        }
+        .device img {
+            width: 50px;
+            height: 50px;
+            margin-right: 20px;
+        }
+        .device h2 {
+            margin-top: 0;
+            color: #555;
+            flex-grow: 1;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+        }
+        button.on {
+            background-color: #4CAF50;
+        }
+        button.off {
+            background-color: #f44336;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        .creators {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            text-align: right;
+            font-size: 14px;
+            color: #555;
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .logo img {
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="https://icons8.com/icon/nrI2jpGiooia/engineering">
+    </div>
+    <div class="container">
+        <h1>HARI-NEPALI VOICE ASSISTANT</h1>
+        <div class="clock" id="clock"></div>
+        
+        <div class="device">
+            <img src="https://img.icons8.com/ios-filled/50/000000/light-on.png" alt="Light 1">
+            <h2>Light 1</h2>
+            <button class="on" onclick="sendCommand('TURN_ON1')">Turn ON</button>
+            <button class="off" onclick="sendCommand('TURN_OFF1')">Turn OFF</button>
+        </div>
+
+        <div class="device">
+            <img src="https://img.icons8.com/ios-filled/50/000000/light-on.png" alt="Light 2">
+            <h2>Light 2</h2>
+            <button class="on" onclick="sendCommand('TURN_ON2')">Turn ON</button>
+            <button class="off" onclick="sendCommand('TURN_OFF2')">Turn OFF</button>
+        </div>
+
+        <div class="device">
+            <img src="https://img.icons8.com/ios-filled/50/000000/fan.png" alt="Fan">
+            <h2>Fan</h2>
+            <button class="on" onclick="sendCommand('FANON')">Turn ON</button>
+            <button class="off" onclick="sendCommand('FANOFF')">Turn OFF</button>
+        </div>
+
+        <div class="device">
+            <img src="https://icons8.com/icon/Dzaf55B0fy5X/radiator" alt="Heater">
+            <h2>Heater</h2>
+            <button class="on" onclick="sendCommand('HEATERON')">Turn ON</button>
+            <button class="off" onclick="sendCommand('HEATEROFF')">Turn OFF</button>
+        </div>
+
+        <div id="status">Status: Ready</div>
+    </div>
+
+    <div class="creators">
+        <p>Created by:</p>
+        <p>Sabin Shrestha</p>
+        <p>Samriddhi Dhoju</p>
+        <p>Swetraj Paudel</p>
+        <p>Tejeswini Tamang</p>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();  // Initial call to display clock immediately
+
+        function sendCommand(cmd) {
+            const status = document.getElementById('status');
+            status.innerHTML = `Sending: ${cmd}...`;
+            status.style.color = 'blue';
+
+            fetch('/control', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `command=${encodeURIComponent(cmd)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.response) {
+                    status.innerHTML = `Success: ${data.response}`;
+                    status.style.color = 'green';
+                } else if(data.error) {
+                    status.innerHTML = `Error: ${data.error}`;
+                    status.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                status.innerHTML = `Network Error: ${error}`;
+                status.style.color = 'red';
+            });
+        }
+    </script>
+</body>
+</html>
